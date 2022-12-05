@@ -26,8 +26,8 @@ def get_hog_features(image):
             print(x)
             block_hist = get_hist(i,j,magnitudes,orientations)
             feature_vector = np.concatenate((feature_vector,block_hist)) 
-    print(feature_vector)
-    return feature_vector
+    
+    return np.reshape(feature_vector,(15,7,36))
 
 
 def get_hist(i,j,magnitudes,orientations):
