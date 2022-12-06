@@ -17,7 +17,6 @@ def get_hog_features(image):
     magnitudes = np.sqrt(np.power(y_grad,2) + np.power(x_grad,2))
     orientations = np.arctan2(y_grad,x_grad) * 180/np.pi
     orientations[orientations < 0] += 180
-    # print(orientations)
     x = 0
     feature_vector = np.array([])#shape should be (3780,) by the end of loop (105 blocks * 36 features per block)
     for i in range(0,120,8):
@@ -48,14 +47,7 @@ def get_hist(i,j,magnitudes,orientations):
 my_descriptor = get_hog_features("/Users/macuser/Desktop/2022-2023/Semester 3/CSCI1430/finalprojectCSCI1430/hog_car.jpg")
 print(np.shape(my_descriptor))
 
-# img = imread("/Users/macuser/Desktop/2022-2023/Semester 3/CSCI1430/finalprojectCSCI1430/hog_car.jpg")
-# img = rgb2gray(img)
-# img = resize(img,(64,128))
-# descriptor, image = hog(img,orientations=9,cells_per_block=(2,2),visualize=True)
-# print(descriptor)
 
-# cosine = np.dot(my_descriptor,descriptor)/(np.linalg.norm(my_descriptor)*np.linalg.norm(descriptor))
-# print(cosine)
 
 
 
