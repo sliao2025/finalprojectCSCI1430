@@ -1,4 +1,3 @@
-#https://pysource.com/2018/05/14/optical-flow-with-lucas-kanade-method-opencv-3-4-with-python-3-tutorial-31/
 
 import cv2
 import numpy as np
@@ -11,11 +10,37 @@ USER_NAME = "Edrick"
 
 #*************************************
 
+#HOW TO USE
+
+# 1. Hold out your hand and click to draw two points DIAGONAL from eachother to create a square - a square should appear there.
+#    THE FIRST SQUARES ARE ALWAYS WRONG BECAUSE ITS BASED ON NULL FRAMES SO DRAW UNTIL ACCURATE
+
+# 2. Re-draw the square as many times as needed to fit whatever you want inside the frame - the square should follow the area you squared off
+
+# 3. The script allows for SOME movement of the hand when taking images (fast, unpredictable, or moving the hand out of frame will not work)
+
+# 4. Press 2: Exit
+#    Press 3: Take a frame for CLICK gesture
+#    Press 4: Take a frame for LEFT gesture
+#    Press 5: Take a frame for RIGHT gesture
+#    Press 6: Take a frame for UP gesture
+
+# 5. To add a gesture: change gestures and num_images list and change line 114 (keyPress for number 2 and so on starts at 51)
 
 
 
+gestures = ["click", "left", "right", "up"]
+num_images = [0, 0, 0, 0]
 
 
+# #Notes
+
+# 1. If you restart the program, the counter for the file names will be restarted
+# again and thus OVERRIDE files with the same file name
+
+# 2. All frames are saved as it, meaning they may all have different dimensions depending on how frames are captured
+# 3. The script is sensitive to luminosity and texture (the more texture and difference in luminosity the better it tracks)
+# 4. I had the best results when there wasn't any harsh or extreme light in the background
 
 
 
@@ -87,6 +112,8 @@ while True:
 
 
     key = cv2.waitKey(1)
+
+
     testkeyPressed = key==51 or key == 52 or key == 53 or key ==54
     if key == 50:
         break
