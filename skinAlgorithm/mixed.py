@@ -25,9 +25,8 @@ USER_NAME = "Edrick"
 #    Press 5: Take a frame for RIGHT gesture
 #    Press 6: Take a frame for UP gesture
 
-# 5. To add a gesture: change gestures and num_images list and change line 114 (keyPress for number 2 and so on starts at 51)
-
-
+# 5. To add a gesture or folder to save to: change gestures and num_images list and change line 116 
+# (keyPress for number 2 and so on starts at 51)
 
 gestures = ["click", "left", "right", "up"]
 num_images = [0, 0, 0, 0]
