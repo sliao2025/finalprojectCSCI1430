@@ -6,7 +6,7 @@ sift = cv2.SIFT_create()
 #feature matching
 class SIFT:
     def __init__(self,cross:str,star:str,arrow_f:str,arrow_b:str) -> None:
-        self.cross = cv2.imread('finalprojectCSCI1430/colorLocator/results/left (3)/orange - Copy.jpeg')  
+        self.cross = cv2.imread(cross)  
         self.star = cv2.imread(star)
         self.arrow_f = cv2.imread(arrow_f)
         self.arrow_b = cv2.imread(arrow_b)
