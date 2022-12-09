@@ -19,6 +19,13 @@ callabration1Image = asarray(callabration1Image)
 callabration2Image = io.imread("cal2.jpg")
 callabration2Image = color.rgb2lab(callabration2Image)
 callabration2Image = asarray(callabration2Image)
+callabration3Image = io.imread("cal3.jpg")
+callabration3Image = color.rgb2lab(callabration3Image)
+callabration3Image = asarray(callabration3Image)
+
+callabration4Image = io.imread("cal4.jpg")
+callabration4Image = color.rgb2lab(callabration4Image)
+callabration4Image = asarray(callabration4Image)
 
 #background = io.imread("background.jpg")
 #background = color.rgb2lab(background)
@@ -60,6 +67,8 @@ def getColor(x, y, image):
 purple = getColor(1426,658,callabration2Image)
 red = getColor(1341,333, callabration1Image)
 orange = getColor(1379, 561, callabration1Image)
+brown = getColor(1569, 720, callabration3Image)
+yellow = getColor(1569, 720, callabration4Image)
 
 #BlBa = blankBackground(orange, green, purple)
 
@@ -85,7 +94,7 @@ for i in range(10):
 
     redImage =  getAllColor(red, testImage)
     orangeImage = getAllColor(orange, testImage)
-    purpleImage = getAllColor(purple, testImage)
+    purpleImage = getAllColor(brown, testImage)
 
     newImage = np.zeros((redImage.shape[0], redImage.shape[1], 3))
     newImage[:, :, 2] = redImage
