@@ -1,5 +1,6 @@
 import cv2 
 import numpy as np
+
 from scipy.spatial.distance import pdist
 sift = cv2.SIFT_create()
 
@@ -11,14 +12,20 @@ class SIFT:
         self.arrow_f = cv2.imread(arrow_f)
         self.arrow_b = cv2.imread(arrow_b)
         self.output_img = None
+    
+    def show_SIFT_features(self):   
+        cv2.imshow('SIFT', self.output_img)
+        cv2.waitKey(0)
+    
     def get_SIFT_features(self,image):
         #create matcher
         bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)
         
-        red = image[:,:,0] #cross or star
-        green = image[:,:,1] #arrow front
-        blue = image[:,:,2] #arrow back
-        red = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY)
+        img = cv2.imread(image)
+        red = img[:,:,2] #cross or star
+        green = img[:,:,1] #arrow front
+        blue = img[:,:,2] #arrow back
+        # red = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY)
         
         keypoints_cross, descriptors_cross = sift.detectAndCompute(self.cross,None)
         keypoints_star, descriptors_star = sift.detectAndCompute(self.star,None)
@@ -44,9 +51,10 @@ class SIFT:
         avg_distances_red_c = np.mean(pdist(matches_red_c_coords))
         avg_distances_red_s = np.mean(pdist(matches_red_s_coords))
         
+        print(avg_distances_red_c,avg_distances_red_s)
         if avg_distances_red_c < avg_distances_red_s:
             #it's a cross, test for up and left directions
-            green = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY)
+            # green = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY)
             keypoints_arrow_f, descriptors_arrow = sift.detectAndCompute(self.arrow_f,None)
             keypoints_green, descriptors_green = sift.detectAndCompute(green,None)
 
@@ -66,7 +74,9 @@ class SIFT:
             if(abs(avg_coords_green[0]-avg_coords_red_c[0]) > abs(avg_coords_green[1]-avg_coords_red_c[1])):
                 #arrow to the left of the cross
                 #move mouse to the left
+                x=1
             else:
+                x=0
                 #arrow above the cross
                 #move mouse up
 
@@ -77,17 +87,11 @@ class SIFT:
 
         #convert to grayscale
         
-        arrow = cv2.cvtColor(arrow, cv2.COLOR_BGR2GRAY)
-        squiggle = cv2.cvtColor(squiggle, cv2.COLOR_BGR2GRAY)
+        # arrow = cv2.cvtColor(arrow, cv2.COLOR_BGR2GRAY)
+        # squiggle = cv2.cvtColor(squiggle, cv2.COLOR_BGR2GRAY)
 
-        
-
-      
-
-        #write for loop that goes through images and then returns the best image based on the distance metric
-        self.output_img = cv2.drawMatches(cross, keypoints_cross, arrow, keypoints_arrow, matches[:600], arrow, flags=2)
+        self.output_img = cv2.drawMatches(self.star, keypoints_star, red, keypoints_red, matches_c[0:10], None, flags=2)
 
 
-    def show_SIFT_features(self):   
-        cv2.imshow('SIFT', self.output_img)
-        cv2.waitKey(0)
+
+ 
