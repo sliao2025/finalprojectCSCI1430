@@ -9,6 +9,9 @@ import matplotlib.image
  
 # Opens the inbuilt camera of laptop to capture video.
 cap = cv2.VideoCapture(0)
+print(cap)
+#cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+#cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
 i = 0
 
 callabration1Image = io.imread("cal1.jpg")
@@ -17,6 +20,18 @@ callabration1Image = asarray(callabration1Image)
 callabration2Image = io.imread("cal2.jpg")
 callabration2Image = color.rgb2lab(callabration2Image)
 callabration2Image = asarray(callabration2Image)
+callabration3Image = io.imread("cal3.jpg")
+callabration3Image = color.rgb2lab(callabration3Image)
+callabration3Image = asarray(callabration3Image)
+callabration4Image = io.imread("cal4.jpg")
+callabration4Image = color.rgb2lab(callabration4Image)
+callabration4Image = asarray(callabration4Image)
+callabration5Image = io.imread("cal 5.jpg")
+callabration5Image = color.rgb2lab(callabration5Image)
+callabration5Image = asarray(callabration5Image)
+callabration6Image = io.imread("cal 6.jpg")
+callabration6Image = color.rgb2lab(callabration6Image)
+callabration6Image = asarray(callabration6Image)
 
 def getColor(x, y, image):
     x = round(x)
@@ -31,7 +46,10 @@ def getColor(x, y, image):
 
 purple = getColor(1426,658,callabration2Image)
 red = getColor(1341,333, callabration1Image)
-orange = getColor(1379, 561, callabration1Image)
+orange = getColor(1596, 839, callabration5Image)
+brown = getColor(1569, 720, callabration3Image)
+yellow = getColor(1560, 592, callabration5Image)
+pink = getColor(1407, 517, callabration6Image)
 
 def calcDeltaE(img1, img2):
     return np.sqrt(np.sum((img1 - img2) ** 2, axis=-1))/255
@@ -41,7 +59,8 @@ def getAllColor(c1, image):
     delt = calcDeltaE(image, colorImage)
     m = np.mean(delt)
     newImage = np.zeros((image.shape[0], image.shape[1]))
-    newImage[delt < m/1.8] = 1
+    print(m/2)
+    newImage[delt < 0.16] = 1
     return newImage
 
 while(cap.isOpened()):
@@ -61,12 +80,12 @@ while(cap.isOpened()):
     frame = color.rgb2lab(frame)
 
 
-    redImage =  getAllColor(red, frame)
+    redImage =  getAllColor(pink, frame)
     orangeImage = getAllColor(orange, frame)
-    purpleImage = getAllColor(purple, frame)
+    purpleImage = getAllColor(yellow, frame)
 
     newImage = np.zeros((redImage.shape[0], redImage.shape[1], 3))
-    newImage[:, :, 2] = redImage
+    #newImage[:, :, 2] = redImage
     newImage[:, :, 0] = orangeImage
     newImage[:, :, 1] = purpleImage
 
