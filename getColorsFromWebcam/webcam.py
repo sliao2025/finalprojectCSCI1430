@@ -60,7 +60,7 @@ def getAllColor(c1, image):
     m = np.mean(delt)
     newImage = np.zeros((image.shape[0], image.shape[1]))
     print(m/2)
-    newImage[delt < 0.16] = 1
+    newImage[delt < 0.17] = 1
     return newImage
 
 while(cap.isOpened()):
