@@ -5,7 +5,7 @@ sift = SIFT(cross='finalprojectCSCI1430/stencils/front/ cross.jpeg',
             arrow_f='finalprojectCSCI1430/stencils/front/arrow_f.jpeg',
             arrow_b='finalprojectCSCI1430/stencils/back/arrow_b.jpeg')
 
-image = 'finalprojectCSCI1430/colorLocator/results/left (2)/all.jpeg'
+image = 'finalprojectCSCI1430/star sample.jpeg'
 
 sift.get_SIFT_features(image)
 sift.show_SIFT_features()

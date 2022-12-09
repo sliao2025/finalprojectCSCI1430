@@ -24,8 +24,10 @@ class SIFT:
         img = cv2.imread(image)
         red = img[:,:,2] #cross or star
         green = img[:,:,1] #arrow front
-        blue = img[:,:,2] #arrow back
+        blue = img[:,:,0] #arrow back
         # red = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY)
+        cv2.imshow('red',red)
+        cv2.waitKey(0)
         
         keypoints_cross, descriptors_cross = sift.detectAndCompute(self.cross,None)
         keypoints_star, descriptors_star = sift.detectAndCompute(self.star,None)
@@ -41,24 +43,32 @@ class SIFT:
 
         # Get the indices of the matching keypoints
         matches_red_c = [match.trainIdx for match in matches_c]
+        matches_cross = [match.queryIdx for match in matches_c]
         matches_red_s = [match.trainIdx for match in matches_s]
+        matches_star = [match.queryIdx for match in matches_s]
 
         # Get the coordinates of the matching keypoints
         matches_red_c_coords = [keypoints_red[idx].pt for idx in matches_red_c]
+        matches_cross_coords = [keypoints_cross[idx].pt for idx in matches_cross]
         matches_red_s_coords = [keypoints_red[idx].pt for idx in matches_red_s]
+        matches_star_coords = [keypoints_star[idx].pt for idx in matches_star]
 
         #Get the average distance of the matches in the red image
         avg_distances_red_c = np.mean(pdist(matches_red_c_coords))
+        avg_distances_cross = np.mean(pdist(matches_cross_coords))
         avg_distances_red_s = np.mean(pdist(matches_red_s_coords))
+        avg_distances_star = np.mean(pdist(matches_star_coords))
+
+        cross_diff = abs(avg_distances_red_c - avg_distances_cross)
+        star_diff = abs(avg_distances_red_s - avg_distances_star)
         
-        print(avg_distances_red_c,avg_distances_red_s)
-        if avg_distances_red_c < avg_distances_red_s:
-            #it's a cross, test for up and left directions
+        print(avg_distances_red_c,avg_distances_cross,avg_distances_red_s,avg_distances_star)
+        if cross_diff < star_diff: #cross, test for up and left
             # green = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY)
-            keypoints_arrow_f, descriptors_arrow = sift.detectAndCompute(self.arrow_f,None)
+            keypoints_arrow_f, descriptors_arrow_f = sift.detectAndCompute(self.arrow_f,None)
             keypoints_green, descriptors_green = sift.detectAndCompute(green,None)
 
-            matches = bf.match(descriptors_arrow,descriptors_green)
+            matches = bf.match(descriptors_arrow_f,descriptors_green)
             matches = sorted(matches, key = lambda x:x.distance)
 
             # Get the indices of the matching keypoints in the green channel
@@ -82,7 +92,29 @@ class SIFT:
 
         else:
             #it's a star, test for down and right directions 
-            keypoints_arrow_b, descriptors_arrow = sift.detectAndCompute(self.arrow_b,None)
+            keypoints_arrow_b, descriptors_arrow_b = sift.detectAndCompute(self.arrow_b,None)
+            keypoints_green, descriptors_green = sift.detectAndCompute(green,None)
+            
+            matches = bf.match(descriptors_arrow_f,descriptors_green)
+            matches = sorted(matches, key = lambda x:x.distance)
+
+            # Get the indices of the matching keypoints in the green channel
+            matches_green = [match.trainIdx for match in matches]
+
+            # Get the coordinates of the matching keypoints in the green channel
+            matches_green_coords = [keypoints_green[idx].pt for idx in matches_green]
+
+            # Get the average coordinates of the matching keypoints in the green channel
+            avg_coords_green = np.mean(matches_green_coords,axis=0)
+            avg_coords_red_s = np.mean(matches_red_s_coords,axis=0)
+            if(abs(avg_coords_green[0]-avg_coords_red_c[0]) > abs(avg_coords_green[1]-avg_coords_red_c[1])):
+                #arrow to the right of the cross
+                #move mouse to the right
+                x=1
+            else:
+                x=0
+                #arrow below the cross
+                #move mouse down
 
 
         #convert to grayscale
@@ -90,7 +122,7 @@ class SIFT:
         # arrow = cv2.cvtColor(arrow, cv2.COLOR_BGR2GRAY)
         # squiggle = cv2.cvtColor(squiggle, cv2.COLOR_BGR2GRAY)
 
-        self.output_img = cv2.drawMatches(self.star, keypoints_star, red, keypoints_red, matches_c[0:10], None, flags=2)
+        self.output_img = cv2.drawMatches(self.cross, keypoints_cross, red, keypoints_red, matches_c[0:10], None, flags=2)
 
 
 
