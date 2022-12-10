@@ -6,7 +6,7 @@ sift = SIFT(reference='finalprojectCSCI1430/both.png',
             arrow_f='finalprojectCSCI1430/stencils/front/arrow_f.jpeg',
             arrow_b='finalprojectCSCI1430/stencils/back/arrow_b.jpeg')
 
-image = 'finalprojectCSCI1430/star sample2.jpeg'
+image = 'finalprojectCSCI1430/cross sample up.jpeg'
 
 
 plt.imshow(cv2.imread('finalprojectCSCI1430/both.png'))
