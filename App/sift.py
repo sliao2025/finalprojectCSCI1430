@@ -125,9 +125,10 @@ class SIFT:
                     #arrow below the cross
                     #move mouse down
                     print('down')
+            self.output_img = cv2.drawMatches(self.reference, keypoints_ref, red, keypoints_red, matches[0:10], None, flags=2)
         except:
             print("error")
-        self.output_img = cv2.drawMatches(self.reference, keypoints_ref, red, keypoints_red, matches[0:10], None, flags=2)
+
 
 
 

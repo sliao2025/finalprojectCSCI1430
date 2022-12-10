@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 import os
 import matplotlib.image
 from sift import SIFT
+import keyboard
 
 
 root = tk.Tk()
@@ -119,6 +120,7 @@ sift = SIFT(reference='reference.png',
             arrow_f='stencils/front/arrow_f.jpeg',
             arrow_b='stencils/back/arrow_b.jpeg')
 while(cap.isOpened()):
+
     ret, frame = cap.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
      
@@ -146,6 +148,9 @@ while(cap.isOpened()):
 
     sift.get_SIFT_features(newImage)
     #sift.show_SIFT_features()
+    if keyboard.is_pressed('esc'):
+        cap.release()
+        print("pressed!!!!!!!!!!!!!!!!!!")
 
  
 cap.release()
