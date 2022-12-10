@@ -3,6 +3,10 @@ from tkinter import filedialog, Text, Label
 from PIL import ImageTk, Image
 import numpy as np
 from skimage import io, color
+import cv2
+from matplotlib import pyplot as plt
+import os
+import matplotlib.image
 
 
 root = tk.Tk()
@@ -13,7 +17,7 @@ frame2 = 0
 button2 = 0
 
 colors = ["Orange", "Yellow"]
-avgColors = [0, 0, 0]
+avgColors = [0, 0]
 colorCounter = 0
 
 def addFile():
@@ -57,12 +61,13 @@ def getColor(x, y):
     ret = ret/(r*r)
     avgColors[colorCounter] = ret
     print(avgColors)
+    return ret
     
 
 
 def on_click(event):
     global lab2, colors, colorCounter, avgColors
-
+    ret = []
     getColor(event.x, event.y)
 
     colorCounter += 1
@@ -73,14 +78,24 @@ def on_click(event):
     colorString = "Choose {}".format(colors[colorCounter])
     
 
-    if colorCounter == 3:
+    if colorCounter == 2:
         print(avgColors)
         exit()
 
     lab2.config(cursor = "dot")
     button2.config(text = colorString)
     
-    
+def calcDeltaE(img1, img2):
+    return np.sqrt(np.sum((img1 - img2) ** 2, axis=-1))/255
+
+def getAllColor(c1, image):
+    colorImage = np.full((image.shape), c1)
+    delt = calcDeltaE(image, colorImage)
+    m = np.mean(delt)
+    newImage = np.zeros((image.shape[0], image.shape[1]))
+    print(m/2)
+    newImage[delt < 0.16] = 1
+    return newImage
 
 
 frame1 = tk.Frame(root, bg = "white")
@@ -93,3 +108,40 @@ button1.pack()
 
 frame1.pack()
 root.mainloop()
+
+yellow = avgColors[1]
+orange = avgColors[0]
+
+cap = cv2.VideoCapture(0)
+i = 0
+while(cap.isOpened()):
+    ret, frame = cap.read()
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+     
+    # This condition prevents from infinite looping
+    # incase video ends.
+    if ret == False:
+        break
+     
+    # Save Frame by Frame into disk using imwrite method
+    #cv2.imwrite('extracted_images/Frame'+str(i)+'.jpg', frame)
+    i += 1
+    name = str(i)
+    #matplotlib.image.imsave("results/"+ name +"/default.jpeg", frame)
+    frame = color.rgb2lab(frame)
+
+
+    #redImage =  getAllColor(pink, frame)
+    orangeImage = getAllColor(orange, frame)
+    yellowImage = getAllColor(yellow, frame)
+
+    newImage = np.zeros((orangeImage.shape[0], orangeImage.shape[1], 3))
+    #newImage[:, :, 2] = redImage
+    newImage[:, :, 0] = orangeImage
+    newImage[:, :, 1] = yellowImage
+
+ 
+cap.release()
+cv2.destroyAllWindows()  
+
+
