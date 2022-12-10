@@ -12,7 +12,7 @@ lab2 = 0
 frame2 = 0
 button2 = 0
 
-colors = ["RED", "GREEN", "BLUE"]
+colors = ["Orange", "Yellow"]
 avgColors = [0, 0, 0]
 colorCounter = 0
 
