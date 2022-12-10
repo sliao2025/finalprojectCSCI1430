@@ -74,14 +74,14 @@ def on_click(event):
     colorCounter += 1
 
     if colorCounter == 2: 
-        return
+        root.destroy()
 
     colorString = "Choose {}".format(colors[colorCounter])
     
 
     if colorCounter == 2:
         print(avgColors)
-        return
+        root.destroy()
 
     lab2.config(cursor = "dot")
     button2.config(text = colorString)
@@ -94,8 +94,8 @@ def getAllColor(c1, image):
     delt = calcDeltaE(image, colorImage)
     m = np.mean(delt)
     newImage = np.zeros((image.shape[0], image.shape[1]))
-    print(m/2)
-    newImage[delt < 0.16] = 1
+    #print(m/2)
+    newImage[delt < 0.15] = 1
     return newImage
 
 
@@ -109,5 +109,46 @@ button1.pack()
 
 frame1.pack()
 root.mainloop()
+
+yellow = avgColors[1]
+orange = avgColors[0]
+
+cap = cv2.VideoCapture(0)
+i = 0
+sift = SIFT(reference='reference.png',
+            arrow_f='stencils/front/arrow_f.jpeg',
+            arrow_b='stencils/back/arrow_b.jpeg')
+while(cap.isOpened()):
+    ret, frame = cap.read()
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+     
+    # This condition prevents from infinite looping
+    # incase video ends.
+    if ret == False:
+        break
+     
+    # Save Frame by Frame into disk using imwrite method
+    #cv2.imwrite('extracted_images/Frame'+str(i)+'.jpg', frame)
+    i += 1
+    name = str(i)
+    #matplotlib.image.imsave("results/"+ name +"/default.jpeg", frame)
+    frame = color.rgb2lab(frame)
+
+
+    #redImage =  getAllColor(pink, frame)
+    orangeImage = getAllColor(orange, frame)
+    yellowImage = getAllColor(yellow, frame)
+
+    newImage = np.zeros((orangeImage.shape[0], orangeImage.shape[1], 3))
+    #newImage[:, :, 2] = redImage
+    newImage[:, :, 0] = orangeImage
+    newImage[:, :, 1] = yellowImage
+
+    sift.get_SIFT_features(newImage)
+    #sift.show_SIFT_features()
+
+ 
+cap.release()
+cv2.destroyAllWindows()  
 
 

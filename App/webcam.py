@@ -13,7 +13,7 @@ print(cap)
 #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
 i = 0
-'''
+
 callabration1Image = io.imread("cal1.jpg")
 callabration1Image = color.rgb2lab(callabration1Image)
 callabration1Image = asarray(callabration1Image)
@@ -50,7 +50,7 @@ orange = getColor(1596, 839, callabration5Image)
 brown = getColor(1569, 720, callabration3Image)
 yellow = getColor(1560, 592, callabration5Image)
 pink = getColor(1407, 517, callabration6Image)
-'''
+
 def calcDeltaE(img1, img2):
     return np.sqrt(np.sum((img1 - img2) ** 2, axis=-1))/255
 
@@ -63,14 +63,6 @@ def getAllColor(c1, image):
     newImage[delt < 0.16] = 1
     return newImage
 
-yellow = avgColors[1]
-orange = avgColors[0]
-
-cap = cv2.VideoCapture(0)
-i = 0
-sift = SIFT(reference='../reference.png',
-            arrow_f='../stencils/front/arrow_f.jpeg',
-            arrow_b='../stencils/back/arrow_b.jpeg')
 while(cap.isOpened()):
     ret, frame = cap.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -88,18 +80,44 @@ while(cap.isOpened()):
     frame = color.rgb2lab(frame)
 
 
-    #redImage =  getAllColor(pink, frame)
+    redImage =  getAllColor(pink, frame)
     orangeImage = getAllColor(orange, frame)
-    yellowImage = getAllColor(yellow, frame)
+    purpleImage = getAllColor(yellow, frame)
 
-    newImage = np.zeros((orangeImage.shape[0], orangeImage.shape[1], 3))
+    newImage = np.zeros((redImage.shape[0], redImage.shape[1], 3))
     #newImage[:, :, 2] = redImage
     newImage[:, :, 0] = orangeImage
-    newImage[:, :, 1] = yellowImage
+    newImage[:, :, 1] = purpleImage
 
-    sift.get_SIFT_features(newImage)
-    sift.show_SIFT_features()
+    temp = np.zeros(newImage.shape)
+    temp[:, :, 0] = redImage
+    temp[:, :, 1] = redImage
+    temp[:, :, 2] = redImage
+    redImage = temp
 
+    temp = np.zeros(newImage.shape)
+    temp[:, :, 0] = orangeImage
+    temp[:, :, 1] = orangeImage
+    temp[:, :, 2] = orangeImage
+    orangeImage = temp
+    
+    temp = np.zeros(newImage.shape)
+    temp[:, :, 0] = purpleImage
+    temp[:, :, 1] = purpleImage
+    temp[:, :, 2] = purpleImage
+    purpleImage = temp
+
+    #newImage = newImage*255
+    print(newImage.shape)
+    if(not os.path.exists("results/")):
+        os.mkdir("results/")
+    if(not os.path.exists("results/" + name + "/")):
+        os.mkdir("results/" + name + "/")
+
+    matplotlib.image.imsave("results/"+ name +"/all.jpeg", newImage)
+    matplotlib.image.imsave("results/"+ name +"/red.jpeg", redImage)
+    matplotlib.image.imsave("results/"+ name +"/orange.jpeg", orangeImage)
+    matplotlib.image.imsave("results/"+ name +"/purple.jpeg", purpleImage)
  
 cap.release()
-cv2.destroyAllWindows()  
+cv2.destroyAllWindows()
