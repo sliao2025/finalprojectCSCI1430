@@ -1,5 +1,6 @@
 import cv2 
 import numpy as np
+import mouse
 
 from scipy.spatial.distance import pdist
 sift = cv2.SIFT_create()
@@ -89,10 +90,12 @@ class SIFT:
                     #arrow to the left of the cross
                     #move mouse to the left
                     print('left')
+                    mouse.move(-10, 0, absolute=False, duration=0.02)
                 else:
                     #arrow above the cross
                     #move mouse up
                     print('up')
+                    mouse.move(0, -10, absolute=False, duration=0.02)
 
             else:
                 #it's a star, test for down and right directions 
@@ -121,10 +124,12 @@ class SIFT:
                     #arrow to the right of the cross
                     #move mouse to the right
                     print('right')
+                    mouse.move(10, 0, absolute=False, duration=0.02)
                 else:
                     #arrow below the cross
                     #move mouse down
                     print('down')
+                    mouse.move(0, 10, absolute=False, duration=0.02)
             self.output_img = cv2.drawMatches(self.reference, keypoints_ref, red, keypoints_red, matches[0:10], None, flags=2)
         except:
             print("error")
