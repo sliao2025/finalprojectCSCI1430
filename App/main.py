@@ -7,6 +7,7 @@ import cv2
 from matplotlib import pyplot as plt
 import os
 import matplotlib.image
+from App.sift import SIFT
 
 
 root = tk.Tk()
@@ -114,6 +115,9 @@ orange = avgColors[0]
 
 cap = cv2.VideoCapture(0)
 i = 0
+sift = SIFT(reference='finalprojectCSCI1430/both.png',
+            arrow_f='finalprojectCSCI1430/stencils/front/arrow_f.jpeg',
+            arrow_b='finalprojectCSCI1430/stencils/back/arrow_b.jpeg')
 while(cap.isOpened()):
     ret, frame = cap.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
