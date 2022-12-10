@@ -6,9 +6,8 @@ sift = cv2.SIFT_create()
 
 #feature matching
 class SIFT:
-    def __init__(self,cross:str,star:str,arrow_f:str,arrow_b:str) -> None:
-        self.cross = cv2.imread(cross)  
-        self.star = cv2.imread(star)
+    def __init__(self,reference:str,arrow_f:str,arrow_b:str) -> None:
+        self.reference = cv2.imread(reference)
         self.arrow_f = cv2.imread(arrow_f)
         self.arrow_b = cv2.imread(arrow_b)
         self.output_img = None
@@ -28,101 +27,103 @@ class SIFT:
         # red = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY)
         cv2.imshow('red',red)
         cv2.waitKey(0)
+        cv2.imshow('green',green)
+        cv2.waitKey(0)
         
-        keypoints_cross, descriptors_cross = sift.detectAndCompute(self.cross,None)
-        keypoints_star, descriptors_star = sift.detectAndCompute(self.star,None)
+        keypoints_ref, descriptors_ref = sift.detectAndCompute(self.reference,None)
         keypoints_red, descriptors_red = sift.detectAndCompute(red,None)
 
-        #Get matches between the red symbol and cross
-        matches_c = bf.match(descriptors_cross,descriptors_red)
-        matches_c = sorted(matches_c, key = lambda x:x.distance)
-
-        #Get matches between red symbol and star
-        matches_s = bf.match(descriptors_star,descriptors_red)
-        matches_s = sorted(matches_s, key = lambda x:x.distance)
+        #Get matches between reference image and red symbol
+        matches = bf.match(descriptors_ref,descriptors_red)
+        matches = sorted(matches,key=lambda x:x.distance)
 
         # Get the indices of the matching keypoints
-        matches_red_c = [match.trainIdx for match in matches_c]
-        matches_cross = [match.queryIdx for match in matches_c]
-        matches_red_s = [match.trainIdx for match in matches_s]
-        matches_star = [match.queryIdx for match in matches_s]
+        matches_red = [match.trainIdx for match in matches]
+        matches_ref = [match.queryIdx for match in matches]
+
 
         # Get the coordinates of the matching keypoints
-        matches_red_c_coords = [keypoints_red[idx].pt for idx in matches_red_c]
-        matches_cross_coords = [keypoints_cross[idx].pt for idx in matches_cross]
-        matches_red_s_coords = [keypoints_red[idx].pt for idx in matches_red_s]
-        matches_star_coords = [keypoints_star[idx].pt for idx in matches_star]
+        matches_red = [keypoints_red[idx].pt for idx in matches_red]
+        matches_ref = [keypoints_ref[idx].pt for idx in matches_ref]
 
-        #Get the average distance of the matches in the red image
-        avg_distances_red_c = np.mean(pdist(matches_red_c_coords))
-        avg_distances_cross = np.mean(pdist(matches_cross_coords))
-        avg_distances_red_s = np.mean(pdist(matches_red_s_coords))
-        avg_distances_star = np.mean(pdist(matches_star_coords))
+        # Find the average x and y coordinates of the matches
+        avg_x_red = np.mean([pt[0] for pt in matches_red])
+        avg_y_red = np.mean([pt[1] for pt in matches_red])
+        avg_x_ref = np.mean([pt[0] for pt in matches_ref])
+        avg_y_ref = np.mean([pt[1] for pt in matches_ref])
 
-        cross_diff = abs(avg_distances_red_c - avg_distances_cross)
-        star_diff = abs(avg_distances_red_s - avg_distances_star)
+        # Combine the average x and y coordinates into a tuple
+        avg_coord_red = (avg_x_red, avg_y_red)
+        avg_coord_ref = (avg_x_ref, avg_y_ref)
+        print(avg_coord_red,avg_coord_ref)
+
+        cross_diff = abs(avg_coord_ref[0] - 43.6)
+        star_diff = abs(avg_coord_ref[0] - 117.6)
         
-        print(avg_distances_red_c,avg_distances_cross,avg_distances_red_s,avg_distances_star)
         if cross_diff < star_diff: #cross, test for up and left
             # green = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY)
             keypoints_arrow_f, descriptors_arrow_f = sift.detectAndCompute(self.arrow_f,None)
             keypoints_green, descriptors_green = sift.detectAndCompute(green,None)
 
-            matches = bf.match(descriptors_arrow_f,descriptors_green)
-            matches = sorted(matches, key = lambda x:x.distance)
+            matches_arrow = bf.match(descriptors_arrow_f,descriptors_green)
+            matches_arrow = sorted(matches_arrow, key = lambda x:x.distance)
 
             # Get the indices of the matching keypoints in the green channel
-            matches_green = [match.trainIdx for match in matches]
+            matches_green = [match.trainIdx for match in matches_arrow]
 
             # Get the coordinates of the matching keypoints in the green channel
             matches_green_coords = [keypoints_green[idx].pt for idx in matches_green]
 
+            img = cv2.drawMatches(self.arrow_f, keypoints_arrow_f, green, keypoints_green, matches_arrow[0:10], None, flags=2)
+            cv2.imshow('arrow',img)
+            cv2.waitKey(0)
             # Get the average coordinates of the matching keypoints in the green channel
-            avg_coords_green = np.mean(matches_green_coords,axis=0)
-            avg_coords_red_c = np.mean(matches_red_c_coords,axis=0)
+            avg_x_green = np.mean([pt[0] for pt in matches_green_coords])
+            avg_y_green = np.mean([pt[1] for pt in matches_green_coords])
+            print(avg_x_green,avg_y_green)
 
-            if(abs(avg_coords_green[0]-avg_coords_red_c[0]) > abs(avg_coords_green[1]-avg_coords_red_c[1])):
+            if abs(avg_x_green-avg_x_red) > abs(avg_y_green-avg_y_red):
                 #arrow to the left of the cross
                 #move mouse to the left
-                x=1
+                print('left')
             else:
-                x=0
                 #arrow above the cross
                 #move mouse up
+                print('up')
 
         else:
             #it's a star, test for down and right directions 
             keypoints_arrow_b, descriptors_arrow_b = sift.detectAndCompute(self.arrow_b,None)
             keypoints_green, descriptors_green = sift.detectAndCompute(green,None)
             
-            matches = bf.match(descriptors_arrow_f,descriptors_green)
-            matches = sorted(matches, key = lambda x:x.distance)
+            matches_arrow = bf.match(descriptors_arrow_b,descriptors_green)
+            matches_arrow = sorted(matches_arrow, key = lambda x:x.distance)
 
             # Get the indices of the matching keypoints in the green channel
-            matches_green = [match.trainIdx for match in matches]
+            matches_green = [match.trainIdx for match in matches_arrow]
 
             # Get the coordinates of the matching keypoints in the green channel
             matches_green_coords = [keypoints_green[idx].pt for idx in matches_green]
 
-            # Get the average coordinates of the matching keypoints in the green channel
-            avg_coords_green = np.mean(matches_green_coords,axis=0)
-            avg_coords_red_s = np.mean(matches_red_s_coords,axis=0)
-            if(abs(avg_coords_green[0]-avg_coords_red_c[0]) > abs(avg_coords_green[1]-avg_coords_red_c[1])):
+            img = cv2.drawMatches(self.arrow_b, keypoints_arrow_b, green, keypoints_green, matches_arrow[0:10], None, flags=2)
+            cv2.imshow('arrow',img)
+            cv2.waitKey(0)
+
+           # Get the average coordinates of the matching keypoints in the green channel
+            avg_x_green = np.mean([pt[0] for pt in matches_green_coords])
+            avg_y_green = np.mean([pt[1] for pt in matches_green_coords])
+            print(avg_x_green,avg_y_green)
+
+            if abs(avg_x_green-avg_x_red) > abs(avg_y_green-avg_y_red):
                 #arrow to the right of the cross
                 #move mouse to the right
-                x=1
+                print('right')
             else:
-                x=0
                 #arrow below the cross
                 #move mouse down
+                print('down')
 
-
-        #convert to grayscale
-        
-        # arrow = cv2.cvtColor(arrow, cv2.COLOR_BGR2GRAY)
-        # squiggle = cv2.cvtColor(squiggle, cv2.COLOR_BGR2GRAY)
-
-        self.output_img = cv2.drawMatches(self.cross, keypoints_cross, red, keypoints_red, matches_c[0:10], None, flags=2)
+        self.output_img = cv2.drawMatches(self.reference, keypoints_ref, red, keypoints_red, matches[0:10], None, flags=2)
 
 
 
