@@ -7,7 +7,7 @@ import cv2
 from matplotlib import pyplot as plt
 import os
 import matplotlib.image
-from App.sift import SIFT
+from sift import SIFT
 
 
 root = tk.Tk()
@@ -38,7 +38,7 @@ def addFile():
 
     lab2.place(x=0, y=0, relwidth=1, relheight=1)
     
-    colorString = "Choose {}".format("RED")
+    colorString = "Choose {}".format("Orange")
     button2 = tk.Button(frame2, text = colorString)
     
     
@@ -73,15 +73,15 @@ def on_click(event):
 
     colorCounter += 1
 
-    if colorCounter == 3: 
-        exit()
+    if colorCounter == 2: 
+        return
 
     colorString = "Choose {}".format(colors[colorCounter])
     
 
     if colorCounter == 2:
         print(avgColors)
-        exit()
+        return
 
     lab2.config(cursor = "dot")
     button2.config(text = colorString)
@@ -109,43 +109,5 @@ button1.pack()
 
 frame1.pack()
 root.mainloop()
-
-yellow = avgColors[1]
-orange = avgColors[0]
-
-cap = cv2.VideoCapture(0)
-i = 0
-sift = SIFT(reference='finalprojectCSCI1430/both.png',
-            arrow_f='finalprojectCSCI1430/stencils/front/arrow_f.jpeg',
-            arrow_b='finalprojectCSCI1430/stencils/back/arrow_b.jpeg')
-while(cap.isOpened()):
-    ret, frame = cap.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-     
-    # This condition prevents from infinite looping
-    # incase video ends.
-    if ret == False:
-        break
-     
-    # Save Frame by Frame into disk using imwrite method
-    #cv2.imwrite('extracted_images/Frame'+str(i)+'.jpg', frame)
-    i += 1
-    name = str(i)
-    #matplotlib.image.imsave("results/"+ name +"/default.jpeg", frame)
-    frame = color.rgb2lab(frame)
-
-
-    #redImage =  getAllColor(pink, frame)
-    orangeImage = getAllColor(orange, frame)
-    yellowImage = getAllColor(yellow, frame)
-
-    newImage = np.zeros((orangeImage.shape[0], orangeImage.shape[1], 3))
-    #newImage[:, :, 2] = redImage
-    newImage[:, :, 0] = orangeImage
-    newImage[:, :, 1] = yellowImage
-
- 
-cap.release()
-cv2.destroyAllWindows()  
 
 
